@@ -28,11 +28,12 @@
             ; sort by priority
             (sort todos #:key caddr <)))
   1)))
-(define command(list* (find-executable-path "whiptail") "--cancel-button" "gtfo" "--title" "YATλ!" "--checklist" "Todos" "20" "50" (number->string (/ (length args) 3)) args))
-; cant read output-to-string
-; (with-output-to-string (lambda ()(apply system* command)))
-; last resort pass --outputfile as param
-(apply system* command)
+  
+; adjust list length dynamically to the amount of todo items
+(define options(list* "--cancel-button" "gtfo" "--title" "YATλ!" "--checklist" "Todos" "20" "50" (number->string (/ (length args) 3)) args))
+(define err(call-with-output-string (lambda (p) ((fifth (apply process*/ports (current-output-port) (current-input-port) p (find-executable-path "dialog") options)) 'wait))))
+(write "capturing the stderr: ")
+(write err)
 
 ; (module whippy racket/base
 ;   (provide checklist)
