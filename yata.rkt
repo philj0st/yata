@@ -2,6 +2,21 @@
 ; todo item (title:s completed:b priority:i)
 (define todos '(("finish writing yata" #f 3) ("learn more functional beauty" #t 5) ("come up with better todo examples" #t 5) ("persist this data" #f 4)))
 
+; read from
+(environment-variables-ref (current-environment-variables ) #"HOME")
+(find-system-path 'home-dir)
+
+; #<path:/home/phil/.racket/yata>
+; (define todos-path (build-path (find-system-path 'pref-dir) "yata" "todos.rkt"))
+(define todos-path (build-path (current-directory) "todos.rkt"))
+(print "opening")
+(print todos-path)
+(define out (open-output-file todos-path #:text #:can-update))
+(print todos out)
+(close-output-port out)
+; read s-expression from file
+(print (file->value todos-path))
+
 ; TODO: zip with lazy integer generator
 ; as long as list is not empty cons the cons of index and car of the list with the cdr of the list
 (define zipWithIndex (lambda (list start-index)
@@ -28,7 +43,7 @@
             ; sort by priority
             (sort todos #:key caddr <)))
   1)))
-  
+
 ; adjust list length dynamically to the amount of todo items
 (define options(list* "--cancel-button" "gtfo" "--title" "YATλ!" "--checklist" "Todos" "20" "50" (number->string (/ (length args) 3)) args))
 (define err(call-with-output-string (lambda (p) ((fifth (apply process*/ports (current-output-port) (current-input-port) p (find-executable-path "dialog") options)) 'wait))))
