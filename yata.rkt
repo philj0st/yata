@@ -1,4 +1,5 @@
 #lang racket
+(require racket/string)
 (require racket/generator)
 (require "filesystem.rkt")
 
@@ -39,9 +40,14 @@
 
 ; adjust list length dynamically to the amount of todo items
 (define options(list* "--cancel-button" "gtfo" "--title" "YATλ!" "--checklist" "Todos" "18" "60" (number->string (/ (length args) 3)) args))
-(define err(call-with-output-string (lambda (p) ((fifth (apply process*/ports (current-output-port) (current-input-port) p (find-executable-path "dialog") options)) 'wait))))
-(write "capturing the stderr: ")
-(write err)
+(define completedTodos
+  (string-split ; "1 3 4" -> '("1" "3" "4")
+   (call-with-output-string
+    (lambda (listener-port)
+      ((fifth ; grab the fifth return value from the system call
+        ; spawn whiptail/dialog process and redirect the stderr to the call-with-string (p)
+        (apply process*/ports (current-output-port) (current-input-port) listener-port (find-executable-path "dialog") options))'wait)))))
+(write completedTodos)
 
 ; (module whippy racket/base
 ;   (provide checklist)
