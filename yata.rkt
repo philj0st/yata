@@ -1,11 +1,20 @@
 #lang racket
+(require racket/generator)
 
-; TODO: zip with lazy integer generator
-; as long as list is not empty cons the cons of index and car of the list with the cdr of the list
-(define zipWithIndex (lambda (list start-index)
-                       (cond
-                         [(empty? list) '()]
-                         [else (cons (cons (number->string start-index) (car list))(zipWithIndex (cdr list) (+ start-index 1)))])))
+; (zip-with-index '("@" "!" "%") 3) -> '(3 . "@") (4 . "!") (5 . "%"))
+(define zip-with-index (lambda (lst start-index)
+                         ; define a generators of natural integers starting from start-index
+                         (letrec ([naturals (sequence->generator (in-naturals start-index))]
+                                  [zip-with-naturals (lambda (lst)
+                                                       (cond ((empty? lst) empty)
+                                                             (else (cons
+                                                                    ; cons (1 "a")
+                                                                    (cons
+                                                                          (naturals)
+                                                                          (car lst))
+                                                                    ; with the recursive call on the lst's tail
+                                                                    (zip-with-naturals(cdr lst))))))])
+                           (zip-with-naturals lst))))
 
 ; to argify -> sanitize to use as argument. ex: #f to OFF
 (define argify-status (lambda (todo) (if (cadr todo)
