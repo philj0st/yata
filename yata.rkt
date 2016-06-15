@@ -1,5 +1,8 @@
 #lang racket
 (require racket/generator)
+(require "filesystem.rkt")
+
+(define todos (load-list))
 
 ; (zip-with-index '("@" "!" "%") 3) -> '(3 . "@") (4 . "!") (5 . "%"))
 (define zip-with-index (lambda (lst start-index)
@@ -10,7 +13,7 @@
                                                              (else (cons
                                                                     ; cons (1 "a")
                                                                     (cons
-                                                                          (naturals)
+                                                                          (number->string(naturals))
                                                                           (car lst))
                                                                     ; with the recursive call on the lst's tail
                                                                     (zip-with-naturals(cdr lst))))))])
@@ -24,7 +27,7 @@
 ; flatten
 (define args (flatten
  ; zip with index
- (zipWithIndex
+ (zip-with-index
   ; replace #t and #f with ON and OFF
   (map argify-status
        (map (lambda (todo)
