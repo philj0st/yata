@@ -25,30 +25,47 @@
                          (cons (car todo) "ON")
                          (cons (car todo) "OFF"))))
 
-; flatten
-(define args (flatten
- ; zip with index
- (zip-with-index
-  ; replace #t and #f with ON and OFF
-  (map argify-status
-       (map (lambda (todo)
-              ; only take title and completed field
-              (take todo 2))
-            ; sort by priority
-            (sort todos #:key caddr <)))
-  1)))
-
+; returns a whiptail/dialog compatible arguemnt string from a todo-list
+; ("1st todo" #f 4) -> "1" "1st todo" "OFF"
+(define argify (lambda (todo-list)
+                (flatten
+                 (zip-with-index
+                  ; replace #t and #f with ON and OFF
+                  (map argify-status
+                       (map (lambda (todo-item)
+                              ; only take title and completed field
+                              (take todo-item 2))
+                            ; sort by priority
+                            (sort todo-list #:key caddr <)))
+                  1))))
+(define args (argify todos))
 ; adjust list length dynamically to the amount of todo items
 (define options(list* "--cancel-button" "gtfo" "--title" "YATλ!" "--checklist" "Todos" "18" "60" (number->string (/ (length args) 3)) args))
-(define completedTodos
-  (string-split ; "1 3 4" -> '("1" "3" "4")
-   (call-with-output-string
-    (lambda (listener-port)
-      ((fifth ; grab the fifth return value from the system call
-        ; spawn whiptail/dialog process and redirect the stderr to the call-with-string (p)
-        (apply process*/ports (current-output-port) (current-input-port) listener-port (find-executable-path "dialog") options))'wait)))))
-(write completedTodos)
+(define completed-todo-indicies
+  (map string->number
+       (string-split ; "1 3 4" -> '("1" "3" "4")
+        (call-with-output-string
+         (lambda (listener-port)
+           ((fifth ; grab the fifth return value from the system call
+             ; spawn whiptail/dialog process and redirect the stderr to the call-with-string (p)
+             (apply process*/ports (current-output-port) (current-input-port) listener-port (find-executable-path "dialog") options))'wait))))))
 
+(write completed-todo-indicies)
+
+; returns todo-list with completed field true or false based on the complted indices list
+(define apply-status
+  (lambda (todo-list completed-indices)
+    ; map over todo itmes
+    (map (lambda (todo-item)
+           ; if the todo item's index is member of the completed indicies
+           (cond [(member (string->number(car todo-item)) completed-indices)
+                  ; set it's completed status to true
+                  (list-set todo-item 2 #t)]
+                 [else
+                  (list-set todo-item 2 #f)]))
+         todo-list)))
+
+(apply-status (zip-with-index (sort todos #:key caddr <) 1) completed-todo-indicies)
 ; (module whippy racket/base
 ;   (provide checklist)
 ;   ; takes a list of (tag item status)s
