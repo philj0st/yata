@@ -26,11 +26,23 @@
 
 
 (define add-todo (lambda ()
-                  (let ([add-todo-text-options (list "--clear" "--title" "YATΛ!" "--inputbox" "New Todo: Content" WINDOW-HEIGHT WINDOW-WIDTH)]
-                        [add-todo-priority-options (list "--clear" "--title" "YATΛ!" "--menu" "New Todo: Priority" WINDOW-HEIGHT WINDOW-WIDTH "3" "1" "High" "2" "Medium" "3" "Low")])
-                    (define text (dialog->string add-todo-text-options))
-                    (define priority (string->number(dialog->string add-todo-priority-options)))
-                    (list text #f priority))))
+                   (let ([add-todo-text-options (list "--clear" "--title" "YATΛ!" "--inputbox" "New Todo: Content" WINDOW-HEIGHT WINDOW-WIDTH)]
+                         [add-todo-priority-options (list "--clear" "--title" "YATΛ!" "--menu" "New Todo: Priority" WINDOW-HEIGHT WINDOW-WIDTH "3" "1" "High" "2" "Medium" "3" "Low")])
+                     ; capture the result of the todo-text dialog as text
+                     (let* ([text (dialog->string add-todo-text-options)]
+                            ; pass text to this immediatly invoked lambda
+                            [priority ((lambda (previous-dialog-passed?)
+                                         ; which assigns the result of the priority-dialog to priority if the text-dialog didn't get cancelled
+                                         (cond [previous-dialog-passed? (dialog->string add-todo-priority-options)]
+                                               ; if the text-dialog got cancelled don't even display the priority-dialog
+                                               [else #f]))
+                                         (non-empty-string? text))])
+                       ; if the priority-dialog didn't get cancelled
+                       (cond [(non-empty-string? priority)
+                              ; return a new todo item
+                              (list text #f (string->number priority))]
+                             ; otherwise return false
+                             [else #f])))))
 
 ; returns todo-list with completed field true or false based on the complted indices list
 (define apply-status
