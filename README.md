@@ -15,3 +15,6 @@ Yet another todo application! this one is implemented in Racket and aimed toward
 _where are my todos saved?_
 
 Yata uses `(build-path (find-system-path 'home-dir) ".racket" "yata" "todos.rkt"))` which will eventually end up saving them somewhere like `/home/phil/.racket/yata/todos.rkt` if you're on linux
+
+### Known issues
+dialog/whiptail's `--checklist` returns an empty string if the dialog gets cancelled but also if no todos are checked. If all Todos are unchecked but one and this only checked one gets unchecked the new state won't be saved because it's more likely to be a cancelled dialog.

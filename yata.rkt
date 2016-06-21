@@ -10,13 +10,11 @@
   (command-line
    #:program "yata"
    #:once-each
-   [("-n" "--new") "Add new Todo"
+   [("-n" "--new") "Displays a dialog to Add a new Todo"
                        (add-todo-flag? #t)]
-   [("-m" "--menu") "Display graphical menu"
+   [("-t" "--toggle") "Displays a dialog to toggle Todos"
                        (toggle-flag? #t)]
    ))
-
-;(write (add-todo))
 
 (when (add-todo-flag?)
  (let ([new-todo (add-todo)])
@@ -25,9 +23,9 @@
 
 (when (toggle-flag?)
  ; capture the result of the toggle-dialog
- (let ([toggled-todos (toggle-todo (load-list))])
+ (let ([new-todos-state (toggle-todos (load-list))])
    ; only save them if the dialog wasn't cancelled
-   (cond [(list? toggled-todos) (save-list (cons new-todo (load-list)))]
-         [else (write "Add Todo was cancelled")])))
+   (cond [(list? new-todos-state) (save-list new-todos-state)]
+         [else (write "Toggling Todos was cancelled")])))
 
 (system "clear")

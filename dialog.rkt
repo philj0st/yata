@@ -12,15 +12,39 @@
     (let* ([menu-heigth (number->string (length todo-list))]
            [window-options (list "--title" "YATΛ!" "--checklist" "Toggle Todos" WINDOW-HEIGHT WINDOW-WIDTH menu-heigth)]
            [todo-list-options (todo-list->shell-options todo-list)]
-           [arguments (append window-options todo-list-options)])
+           [arguments (append window-options todo-list-options)]
+           [checked-indicies (dialog->string arguments)])
 
-      (map cdr ; removes the index again
-           ; TODO: refactor
-           (apply-status ; returns todo-list with completed field true or false based on the complted indices list
-            (zip-with-index (sort todo-list #:key caddr <) 1)
-            (map string->number
-                 (string-split ; "1 3 4" -> '("1" "3" "4")
-                  (dialog->string arguments)))))))) ; returns the indices of the checked todos
+      (cond [(non-empty-string? checked-indicies)
+             (map cdr ; removes the index again
+                  ; returns todo-list with completed field true or false based on the complted indices list
+                  (apply-status
+                   (zip-with-index
+                    (sort todo-list #:key caddr <) 1)
+                   ; '("1" "3" "4") -> '(1 3 4)
+                   (map string->number
+                        ; "1 3 4" -> '("1" "3" "4")
+                        (string-split checked-indicies))))]
+            ; if the toggle-dialog returns a empty string usually means the dialog got cancelled
+            ; could also mean that no todo is checked -> check issues
+            [else #f]))))
+            
+; ; takes a list of (tag item status)s
+; ; returns the new state of the todo list after toggling
+; (define toggle-todos
+;   (lambda (todo-list)
+;     (let* ([menu-heigth (number->string (length todo-list))]
+;            [window-options (list "--title" "YATΛ!" "--checklist" "Toggle Todos" WINDOW-HEIGHT WINDOW-WIDTH menu-heigth)]
+;            [todo-list-options (todo-list->shell-options todo-list)]
+;            [arguments (append window-options todo-list-options)])
+;
+;       (map cdr ; removes the index again
+;            ; TODO: refactor
+;            (apply-status ; returns todo-list with completed field true or false based on the complted indices list
+;             (zip-with-index (sort todo-list #:key caddr <) 1)
+;             (map string->number
+;                  (string-split ; "1 3 4" -> '("1" "3" "4")
+;                   (dialog->string arguments)))))))) ; returns the indices of the checked todos
 
 
 
