@@ -9,3 +9,9 @@ Yet another todo application! this one is implemented in Racket and aimed toward
 - [x] parse dialog/whiptail's return value to actual changes
 - [x] stack/chain dialogs for adding a new todo
 - [ ] menu for CRUD on todos
+- [ ] connect with google todo api
+
+### FAQ
+_where are my todos saved?_
+
+Yata uses `(build-path (find-system-path 'home-dir) ".racket" "yata" "todos.rkt"))` which will eventually end up saving them somewhere like `/home/phil/.racket/yata/todos.rkt` if you're on linux
