@@ -7,5 +7,5 @@ Yet another todo application! this one is implemented in Racket and aimed toward
 - [x] parse Racket list to dialog/whiptail arguments (called it argify :smile_cat:)
 - [x] read/write todo list in data mode
 - [x] parse dialog/whiptail's return value to actual changes
-- [ ] stack/chain dialogs for adding a new todo
+- [x] stack/chain dialogs for adding a new todo
 - [ ] menu for CRUD on todos
