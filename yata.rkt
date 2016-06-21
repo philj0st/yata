@@ -25,6 +25,7 @@
                          (cons (car todo) "ON")
                          (cons (car todo) "OFF"))))
 
+; TODO: refactor argify to operate on single todo-item and call map in todo-list
 ; returns a whiptail/dialog compatible arguemnt string from a todo-list
 ; ("1st todo" #f 4) -> "1" "1st todo" "OFF"
 (define argify (lambda (todo-list)
@@ -65,10 +66,5 @@
                   (list-set todo-item 2 #f)]))
          todo-list)))
 
-(apply-status (zip-with-index (sort todos #:key caddr <) 1) completed-todo-indicies)
-; (module whippy racket/base
-;   (provide checklist)
-;   ; takes a list of (tag item status)s
-;   ; There are menu-height entries displayed in the menu at one time, but the menu will be scrolled if there are more entries than that.
-;   (define checklist (lambda (text height width menu-height tag-item-status-list)
-;                  (let ([tag-item-status-string (flatten tag-item-status-list)])
+(save-list (map cdr (apply-status (zip-with-index (sort todos #:key caddr <) 1) completed-todo-indicies)))
+(system "clear")
