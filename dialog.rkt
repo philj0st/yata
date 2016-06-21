@@ -1,5 +1,8 @@
 #lang racket
 (require racket/generator)
+(require racket/string)
+
+(require "system.rkt")
 (provide toggle-todos add-todo)
 
 (define toggle-todos (lambda (todo-list)
@@ -14,17 +17,12 @@
              ; spawn whiptail/dialog process and redirect the stderr to the call-with-string (p)
              (apply process*/ports (current-output-port) (current-input-port) listener-port (find-executable-path "dialog") options))'wait)))))))
 
-; TODO: extract system call
+
 (define add-todo (lambda ()
-                  (let* ([constant-options (lambda (title) (list "--clear" "--inputbox" title "18" "60"))]
-                         [get-text (lambda (title)
-                                     (call-with-output-string
-                                      (lambda (listener-port)
-                                        ((fifth ; grab the fifth return value from the system call
-                                          ; spawn whiptail/dialog process and redirect the stderr to the call-with-string (p)
-                                          (apply process*/ports (current-output-port) (current-input-port) listener-port (find-executable-path "dialog") (constant-options title)))'wait))))])
-                    (define text (get-text "New Todo"))
-                    (define priority (get-text "Priority"))
+                  (let* ([todo-text-options (list "--clear" "--inputbox" "New Todo: Content" WINDOW-HEIGHT WINDOW-WIDTH)]
+                         [todo-priority-options (list "--clear" "--menu" "New Todo: Priority" WINDOW-HEIGHT WINDOW-WIDTH "3" "1" "High" "2" "Medium" "3" "Low")])
+                    (define text (dialog->string todo-text-options))
+                    (define priority (string->number(dialog->string todo-priority-options)))
                     (list text #f priority))))
 
 ; to todo-list->shell-options -> sanitize to use as argument. ex: #f to OFF
