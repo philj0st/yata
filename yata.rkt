@@ -2,6 +2,7 @@
 (require racket/string)
 (require racket/generator)
 (require "filesystem.rkt")
+(require "dialog.rkt")
 
 (define todos (load-list))
 
@@ -20,39 +21,6 @@
                                                                     (zip-with-naturals(cdr lst))))))])
                            (zip-with-naturals lst))))
 
-; to argify -> sanitize to use as argument. ex: #f to OFF
-(define argify-status (lambda (todo) (if (cadr todo)
-                         (cons (car todo) "ON")
-                         (cons (car todo) "OFF"))))
-
-; TODO: refactor argify to operate on single todo-item and call map in todo-list
-; returns a whiptail/dialog compatible arguemnt string from a todo-list
-; ("1st todo" #f 4) -> "1" "1st todo" "OFF"
-(define argify (lambda (todo-list)
-                (flatten
-                 (zip-with-index
-                  ; replace #t and #f with ON and OFF
-                  (map argify-status
-                       (map (lambda (todo-item)
-                              ; only take title and completed field
-                              (take todo-item 2))
-                            ; sort by priority
-                            (sort todo-list #:key caddr <)))
-                  1))))
-(define args (argify todos))
-; adjust list length dynamically to the amount of todo items
-(define options(list* "--cancel-button" "gtfo" "--title" "YATλ!" "--checklist" "Todos" "18" "60" (number->string (/ (length args) 3)) args))
-(define completed-todo-indicies
-  (map string->number
-       (string-split ; "1 3 4" -> '("1" "3" "4")
-        (call-with-output-string
-         (lambda (listener-port)
-           ((fifth ; grab the fifth return value from the system call
-             ; spawn whiptail/dialog process and redirect the stderr to the call-with-string (p)
-             (apply process*/ports (current-output-port) (current-input-port) listener-port (find-executable-path "dialog") options))'wait))))))
-
-(write completed-todo-indicies)
-
 ; returns todo-list with completed field true or false based on the complted indices list
 (define apply-status
   (lambda (todo-list completed-indices)
@@ -66,5 +34,9 @@
                   (list-set todo-item 2 #f)]))
          todo-list)))
 
-(save-list (map cdr (apply-status (zip-with-index (sort todos #:key caddr <) 1) completed-todo-indicies)))
+
+(write (cons (add-todo) todos))
+; toggling todos and save result
+(save-list (map cdr (apply-status (zip-with-index (sort todos #:key caddr <) 1) (toggle-todos todos))))
+
 (system "clear")
