@@ -8,6 +8,10 @@ Yet another todo application! this one is implemented in Racket and aimed toward
 - [x] read/write todo list in data mode
 - [x] parse dialog/whiptail's return value to actual changes
 - [x] stack/chain dialogs for adding a new todo
+- [x] Create
+- [x] Read
+- [ ] Update
+- [x] Delete
 - [ ] menu for CRUD on todos
 - [ ] connect with google todo api
 
