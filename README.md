@@ -12,6 +12,7 @@ Yet another todo application! this one is implemented in Racket and aimed toward
 - [x] Read
 - [ ] Update
 - [x] Delete
+- [ ] decouple dialog module so that unsorted-todo-list -> unsorted-todo-list with changes. Sorting and indexing gets abstracted within dialog module.
 - [ ] menu for CRUD on todos
 - [ ] connect with google todo api
 

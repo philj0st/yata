@@ -3,7 +3,7 @@
 (require racket/string)
 
 (require "system.rkt")
-(provide toggle-todos add-todo)
+(provide toggle-todos add-todo edit-todos)
 
 ; takes a list of (tag item status)s
 ; returns the new state of the todo list after toggling
@@ -28,25 +28,6 @@
             ; if the toggle-dialog returns a empty string usually means the dialog got cancelled
             ; could also mean that no todo is checked -> check issues
             [else #f]))))
-            
-; ; takes a list of (tag item status)s
-; ; returns the new state of the todo list after toggling
-; (define toggle-todos
-;   (lambda (todo-list)
-;     (let* ([menu-heigth (number->string (length todo-list))]
-;            [window-options (list "--title" "YATΛ!" "--checklist" "Toggle Todos" WINDOW-HEIGHT WINDOW-WIDTH menu-heigth)]
-;            [todo-list-options (todo-list->shell-options todo-list)]
-;            [arguments (append window-options todo-list-options)])
-;
-;       (map cdr ; removes the index again
-;            ; TODO: refactor
-;            (apply-status ; returns todo-list with completed field true or false based on the complted indices list
-;             (zip-with-index (sort todo-list #:key caddr <) 1)
-;             (map string->number
-;                  (string-split ; "1 3 4" -> '("1" "3" "4")
-;                   (dialog->string arguments)))))))) ; returns the indices of the checked todos
-
-
 
 
 (define add-todo (lambda ()
@@ -67,6 +48,20 @@
                               (list text #f (string->number priority))]
                              ; otherwise return false
                              [else #f])))))
+
+; todo-list (unindexed) -> todo-list (unindexed)
+(define edit-todos
+ (lambda (todo-list)
+   ; if the todo-list is smaller than 6 let the menu-heigth be 3*size, else 18
+   (let* ([menu-heigth (number->string((lambda (x) (if (> x 6) 18 (* x 3)))(length todo-list)))]
+         ; using 19 as heigth makes 4 items fit on the screen in --inputmenu mode
+         [window-options (list "--title" "YATΛ!" "--inputmenu" "Edit Todos" "19" WINDOW-WIDTH menu-heigth)]
+         [todo-list-options (todo-list->index-content-pair todo-list)]
+         [arguments (append window-options todo-list-options)]
+         [changes (dialog->string arguments)]
+         [changed-index (string->number(cadr (string-split changes)))])
+     (write changed-index))))
+
 
 ; returns todo-list with completed field true or false based on the complted indices list
 (define apply-status
@@ -99,6 +94,18 @@
                               (take todo-item 2))
                             ; sort by priority
                             (sort todo-list #:key caddr <)))
+                  1))))
+
+; TODO Refactor/combine with shell-options
+(define todo-list->index-content-pair (lambda (todo-list)
+                (flatten
+                 (zip-with-index
+                  ; replace #t and #f with ON and OFF
+                  (map (lambda (todo-item)
+                         ; only take title
+                         (car todo-item))
+                       ; sort by priority
+                       (sort todo-list #:key caddr <))
                   1))))
 
 ; (zip-with-index '("@" "!" "%") 3) -> '(3 . "@") (4 . "!") (5 . "%"))

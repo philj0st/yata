@@ -16,6 +16,7 @@
 (define add-todo-flag? (make-parameter #f))
 (define remove-completed-flag? (make-parameter #f))
 (define toggle-flag? (make-parameter #f))
+(define edit-flag? (make-parameter #f))
 
 (define options
   (command-line
@@ -27,6 +28,8 @@
                        (remove-completed-flag? #t)]
    [("-t" "--toggle") "Displays a dialog to toggle Todos"
                        (toggle-flag? #t)]
+   [("-e" "--edit") "Displays a dialog to rename Todos"
+                       (edit-flag? #t)]
    [("-v" "--version") "Displays Yata's version number"
                        ; hardcoded for now
                        (displayln "0.0.1")]
@@ -60,7 +63,16 @@
 (when (toggle-flag?)
  ; capture the result of the toggle-dialog
  (let ([new-todos-state (toggle-todos (load-list))])
+   (write new-todos-state)))
+  ; (system "clear")
+  ; ; only save them if the dialog wasn't cancelled
+  ; (cond [(list? new-todos-state) (save-list new-todos-state)]
+  ;       [else (write "Toggling Todos was cancelled")])))
+
+(when (edit-flag?)
+ ; capture the result of the toggle-dialog
+ (let ([new-todos-state (edit-todos (load-list))])
    (system "clear")
    ; only save them if the dialog wasn't cancelled
-   (cond [(list? new-todos-state) (save-list new-todos-state)]
+   (cond [(list? new-todos-state) (write new-todos-state)]
          [else (write "Toggling Todos was cancelled")])))
