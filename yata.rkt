@@ -13,6 +13,7 @@
              ; filters for the todo items that have a #t at the cadr spot
              (cadr todo-item)))
 
+(define menu-flag? (make-parameter #f))
 (define add-todo-flag? (make-parameter #f))
 (define remove-completed-flag? (make-parameter #f))
 (define toggle-flag? (make-parameter #f))
@@ -22,6 +23,8 @@
   (command-line
    #:program "yata"
    #:once-each
+   [("-m" "--menu") "Displays a menu with actions"
+                       (menu-flag? #t)]
    [("-n" "--new") "Displays a dialog to Add a new Todo"
                        (add-todo-flag? #t)]
    [("-r" "--remove-completed") "Removes all completed Todos"
@@ -39,6 +42,17 @@
 ; if there are no flags set run default action
 (when (zero? (vector-length (current-command-line-arguments)))
   (toggle-flag? #t))
+
+(when (menu-flag?)
+  ; capture the result of the add-todo-dialog
+  (let ([choice (menu)])
+    (system "clear")
+    (match choice
+      ["Toggle Todos" (toggle-flag? #t)]
+      ["New Todo" (add-todo-flag? #t)]
+      ["Remove Completed" (remove-completed-flag? #t)]
+      ["Edit Todo" (edit-flag? #t)]
+      ["Quit" (exit)])))
 
 (when (add-todo-flag?)
 ; capture the result of the add-todo-dialog

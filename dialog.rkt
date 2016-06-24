@@ -3,7 +3,15 @@
 (require racket/string)
 
 (require "system.rkt")
-(provide toggle-todos add-todo edit-todos)
+(provide toggle-todos add-todo edit-todos menu)
+
+; displays a menu
+(define menu
+  (lambda ()
+    (let* ([window-options (list "--no-items" "--title" "YATΛ!" "--menu" "Main Menu" WINDOW-HEIGHT WINDOW-WIDTH "5")]
+          [item-options (list "Toggle Todos" "New Todo" "Remove Completed" "Edit Todo" "Quit")]
+          [arguments (append window-options item-options)])
+      (dialog->string arguments))))
 
 ; takes a list of (tag item status)s
 ; returns the new state of the todo list after toggling
