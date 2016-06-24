@@ -58,9 +58,33 @@
          [window-options (list "--title" "YATΛ!" "--inputmenu" "Edit Todos" "19" WINDOW-WIDTH menu-heigth)]
          [todo-list-options (todo-list->index-content-pair todo-list)]
          [arguments (append window-options todo-list-options)]
-         [changes (dialog->string arguments)]
-         [changed-index (string->number(cadr (string-split changes)))])
-     (write changed-index))))
+         ; returns something like RENAMED 1 new todo content
+         [changes (dialog->string arguments)])
+     (cond [(string=? (car (string-split changes)) "RENAMED")
+            (let ([changed-index (string->number(cadr (string-split changes)))]
+                  ; TODO: refactor to (substring changes (+ (index-of changed-index) (length changed-index)))
+                  [new-content (substring changes 10)])
+              (rename-at-with todo-list changed-index new-content))]
+            [else #f]))))
+
+(define rename-at-with
+  (lambda (todo-list index content)
+    (let ([sorted (zip-with-index-from-1 (sort-by-prio todo-list))])
+      (map
+       (lambda (todo-item)
+         (cond [(= (string->number(car todo-item)) index) (list* content (cddr todo-item))]
+               [else (cdr todo-item)]))
+      sorted))))
+
+; curry for convenience
+(define zip-with-index-from-1
+ (lambda (lst)
+   (zip-with-index lst 1)))
+
+
+(define sort-by-prio
+ (λ (todo-list)
+   (sort todo-list #:key caddr <)))
 
 
 ; returns todo-list with completed field true or false based on the complted indices list

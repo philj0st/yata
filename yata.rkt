@@ -61,18 +61,17 @@
 
 
 (when (toggle-flag?)
- ; capture the result of the toggle-dialog
- (let ([new-todos-state (toggle-todos (load-list))])
-   (write new-todos-state)))
-  ; (system "clear")
-  ; ; only save them if the dialog wasn't cancelled
-  ; (cond [(list? new-todos-state) (save-list new-todos-state)]
-  ;       [else (write "Toggling Todos was cancelled")])))
+  ; capture the result of the toggle-dialog
+  (let ([new-todos-state (toggle-todos (load-list))])
+    (system "clear")
+    ; only save them if the dialog wasn't cancelled
+    (cond [(list? new-todos-state) (save-list new-todos-state)]
+          [else (write "Toggling Todos was cancelled")])))
 
 (when (edit-flag?)
  ; capture the result of the toggle-dialog
  (let ([new-todos-state (edit-todos (load-list))])
    (system "clear")
    ; only save them if the dialog wasn't cancelled
-   (cond [(list? new-todos-state) (write new-todos-state)]
-         [else (write "Toggling Todos was cancelled")])))
+   (cond [(list? new-todos-state) (save-list new-todos-state)]
+         [else (displayln "Nothing changed")])))

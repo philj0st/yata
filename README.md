@@ -10,7 +10,7 @@ Yet another todo application! this one is implemented in Racket and aimed toward
 - [x] stack/chain dialogs for adding a new todo
 - [x] Create
 - [x] Read
-- [ ] Update
+- [x] Update
 - [x] Delete
 - [ ] decouple dialog module so that unsorted-todo-list -> unsorted-todo-list with changes. Sorting and indexing gets abstracted within dialog module.
 - [ ] menu for CRUD on todos
