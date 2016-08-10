@@ -1,5 +1,7 @@
 # YATΛ
-Yet another todo application! this one is implemented in Racket and aimed towards quick cli-usage. I'm using `dialog` and `whiptail` for the user interface which allows for a smooth cross-platform / non-gui-required experience :)
+Yet another todo application! implemented in Racket leveraging `Dialog`/`Whiptail` to print a GUI in ANSI color codes to the shell so there is no need for a desktop environment.
+Yata is a tool that lets you create, remove, update, delete and toggle todos from your shell. It spawns Dialog/Whiptail dialogs as child processes, sends all the standard input to the child process and redirects the child processes standard output back to the parent shell process where it got invoked.
+
 ![cli-callable todo](http://i.imgur.com/BaKWJsw.gif)
 
 ### Roadmap
