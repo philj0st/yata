@@ -23,5 +23,8 @@ _where are my todos saved?_
 
 Yata uses `(build-path (find-system-path 'home-dir) ".racket" "yata" "todos.rkt"))` which will eventually end up saving them somewhere like `/home/phil/.racket/yata/todos.rkt` if you're on linux
 
+### Installation
+I'm afraid at the moment there's no other way than to build from source :construction_worker:. This can be achieved by cloning this directory and then use some IDE like *DrRacket* which has the option to *Racket*->*Create Executable*.
+
 ### Known issues
 dialog/whiptail's `--checklist` returns an empty string if the dialog gets cancelled but also if no todos are checked. If all Todos are unchecked but one and this only checked one gets unchecked the new state won't be saved because it's more likely to be a cancelled dialog.
