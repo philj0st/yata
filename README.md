@@ -1,5 +1,5 @@
 # YATΛ :ballot_box_with_check:
-**Y**et **a**nother **t**odo **a**pplication! implemented in Racket leveraging `Dialog`/`Whiptail` to print a GUI to a terminal.
+**Y**et **a**nother **t**odo **a**pplication! Λ uppercase lambda because it's implemented in Racket. Leveraging `Dialog`/`Whiptail` to print a GUI to a terminal.
 
 Yata is a tool that lets you create, remove, update, delete and toggle todos from your shell. It spawns Dialog/Whiptail dialogs as child processes, sends all the standard input to the child process and redirects the child processes standard output back to the parent shell process where it was invoked.
 
